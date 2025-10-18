@@ -3,6 +3,10 @@ package firebird
 import (
 	"database/sql"
 	"fmt"
+	"math"
+	"strconv"
+	"time"
+
 	_ "github.com/nakagami/firebirdsql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/callbacks"
@@ -10,9 +14,6 @@ import (
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/migrator"
 	"gorm.io/gorm/schema"
-	"math"
-	"strconv"
-	"time"
 )
 
 type Config struct {
@@ -57,7 +58,7 @@ func (dialector Dialector) Apply(config *gorm.Config) error {
 
 var (
 	// CreateClauses create clauses
-	CreateClauses = []string{"INSERT", "VALUES", ""}
+	CreateClauses = []string{"INSERT", "VALUES", "", "RETURNING"}
 	// UpdateClauses update clauses
 	UpdateClauses = []string{"UPDATE", "SET", "WHERE", "ORDER BY", "LIMIT"}
 	// DeleteClauses delete clauses
