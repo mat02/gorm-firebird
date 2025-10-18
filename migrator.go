@@ -3,12 +3,13 @@ package firebird
 import (
 	"database/sql"
 	"fmt"
+	"reflect"
+	"strings"
+
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"gorm.io/gorm/migrator"
 	"gorm.io/gorm/schema"
-	"reflect"
-	"strings"
 )
 
 type Migrator struct {
@@ -173,15 +174,13 @@ func (m Migrator) RenameIndex(value interface{}, oldName, newName string) error 
 func (m Migrator) DropTable(values ...interface{}) error {
 	values = m.ReorderModels(values, false)
 	tx := m.DB.Session(&gorm.Session{})
-	tx.Exec("SET FOREIGN_KEY_CHECKS = 0;")
 	for i := len(values) - 1; i >= 0; i-- {
 		if err := m.RunWithValue(values[i], func(stmt *gorm.Statement) error {
-			return tx.Exec("DROP TABLE IF EXISTS ? CASCADE", clause.Table{Name: stmt.Table}).Error
+			return tx.Exec("DROP TABLE ?;", clause.Table{Name: stmt.Table}).Error
 		}); err != nil {
 			return err
 		}
 	}
-	tx.Exec("SET FOREIGN_KEY_CHECKS = 1;")
 	return nil
 }
 
